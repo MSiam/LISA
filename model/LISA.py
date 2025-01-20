@@ -136,7 +136,7 @@ class LISAForCausalLM(LlavaLlamaForCausalLM):
             self.bce_loss_weight = kwargs.pop("bce_loss_weight", None)
         else:
             config.mm_vision_tower = config.vision_tower
-            
+
         self.seg_token_idx = kwargs.pop("seg_token_idx")
 
         super().__init__(config)
@@ -351,15 +351,20 @@ class LISAForCausalLM(LlavaLlamaForCausalLM):
         original_size_list,
         max_new_tokens=32,
         tokenizer=None,
+        temperature=0.0,
+        top_p=None,
+        num_beams=1
     ):
         with torch.no_grad():
             outputs = self.generate(
                 images=images_clip,
                 input_ids=input_ids,
                 max_new_tokens=max_new_tokens,
-                num_beams=1,
+                num_beams=num_beams,
                 output_hidden_states=True,
                 return_dict_in_generate=True,
+                temperature=temperature,
+                top_p=top_p
             )
             output_hidden_states = outputs.hidden_states[-1]
             output_ids = outputs.sequences
